@@ -14,3 +14,6 @@ terragrunt-debug.tfvars.json
 .terraform
 *.tfstate
 *.tfstate.backup
+
+# other
+.vscode

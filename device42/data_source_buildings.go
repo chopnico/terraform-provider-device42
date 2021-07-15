@@ -9,11 +9,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceVrfGroups() *schema.Resource {
+func dataSourceBuildings() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceVrfGroupsRead,
+		ReadContext: dataSourceBuildingsRead,
 		Schema: map[string]*schema.Schema{
-			"vrf_groups": &schema.Schema{
+			"buildings": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Resource{
@@ -26,16 +26,13 @@ func dataSourceVrfGroups() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"description": &schema.Schema{
+						"address": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"buildings": &schema.Schema{
-							Type:     schema.TypeList,
+						"notes": &schema.Schema{
+							Type:     schema.TypeString,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
 						},
 					},
 				},
@@ -45,34 +42,34 @@ func dataSourceVrfGroups() *schema.Resource {
 }
 
 // get vrf groups
-func dataSourceVrfGroupsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceBuildingsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*device42.Api)
 
 	var diags diag.Diagnostics
 
-	vrfGroups, err := c.GetVrfGroups()
+	buildings, err := c.GetBuildings()
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "unable to get a list of vrf groups",
+			Summary:  "unable to get a list of buildings",
 			Detail:   err.Error(),
 		})
 		return diags
 	}
 
-	vgs := flattenVrfGroupsData(vrfGroups)
-	if err := d.Set("vrf_groups", vgs); err != nil {
+	bs := flattenBuildingsData(buildings)
+	if err := d.Set("buildings", bs); err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "unable to set vrf groups",
+			Summary:  "unable to set buildings",
 			Detail:   err.Error(),
 		})
 		return diags
 	}
 
-	ids := make([]int, len((*vrfGroups)))
-	for _, i := range *vrfGroups {
-		ids = append(ids, i.ID)
+	ids := make([]int, len((*buildings)))
+	for _, i := range *buildings {
+		ids = append(ids, i.BuildingID)
 	}
 
 	checksum := idsChecksum(ids)
@@ -83,22 +80,22 @@ func dataSourceVrfGroupsRead(ctx context.Context, d *schema.ResourceData, m inte
 }
 
 // flatten vrf groups to a map
-func flattenVrfGroupsData(vrfGroups *[]device42.VrfGroup) []interface{} {
-	if vrfGroups != nil {
-		vgs := make([]interface{}, len(*vrfGroups))
+func flattenBuildingsData(buildings *[]device42.Building) []interface{} {
+	if buildings != nil {
+		bs := make([]interface{}, len(*buildings))
 
-		for i, vrfGroup := range *vrfGroups {
-			vg := make(map[string]interface{})
+		for i, building := range *buildings {
+			b := make(map[string]interface{})
 
-			vg["id"] = vrfGroup.ID
-			vg["name"] = vrfGroup.Name
-			vg["description"] = vrfGroup.Description
-			vg["buildings"] = vrfGroup.Buildings
+			b["id"] = building.BuildingID
+			b["name"] = building.Name
+			b["address"] = building.Address
+			b["notes"] = building.Notes
 
-			vgs[i] = vg
+			bs[i] = b
 		}
 
-		return vgs
+		return bs
 	}
 
 	return make([]interface{}, 0)

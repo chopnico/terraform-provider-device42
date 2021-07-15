@@ -14,11 +14,16 @@ import (
 
 func resourceVrfGroup() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceVrfGroupCreate,
+		CreateContext: resourceVrfGroupUpdate,
 		ReadContext:   resourceVrfGroupRead,
 		UpdateContext: resourceVrfGroupUpdate,
 		DeleteContext: resourceVrfGroupDelete,
 		Schema: map[string]*schema.Schema{
+			"last_updated": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -42,7 +47,7 @@ func resourceVrfGroup() *schema.Resource {
 	}
 }
 
-func resourceVrfGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceVrfGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*device42.Api)
 
 	// Warning or errors can be collected in a slice type
@@ -113,13 +118,34 @@ func resourceVrfGroupRead(ctx context.Context, d *schema.ResourceData, m interfa
 	return diags
 }
 
-func resourceVrfGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return resourceVrfGroupRead(ctx, d, m)
-}
-
+// delete vrf group
 func resourceVrfGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*device42.Api)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+
+	var id int
+	_, err := fmt.Sscan(d.Id(), &id)
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "unable to get vrf group id",
+			Detail:   err.Error(),
+		})
+		return diags
+	}
+
+	err = c.DeleteVrfGroup(id)
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "unable to delete vrf group with id " + d.Id(),
+			Detail:   err.Error(),
+		})
+		return diags
+	}
+
+	d.SetId("")
 
 	return diags
 }

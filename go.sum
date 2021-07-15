@@ -66,6 +66,8 @@ github.com/chopnico/device42-go v0.1.1-2 h1:XrbpN5J6PNYyvSxw2W3XSzc9fXNnZ8LQ0OkT
 github.com/chopnico/device42-go v0.1.1-2/go.mod h1:qxnbyP9kMrNXYRZD+YY+z8K0kViIaunnPM+DKD20SA0=
 github.com/chopnico/device42-go v0.1.1-3 h1:vy1/SohaKB34etWnSCJrg5XnNKMyfw/JAFh7hlTjdrw=
 github.com/chopnico/device42-go v0.1.1-3/go.mod h1:qxnbyP9kMrNXYRZD+YY+z8K0kViIaunnPM+DKD20SA0=
+github.com/chopnico/device42-go v0.1.2-1 h1:CMEj+dIc561JfHZldvxqW96Aq0BxleZ03wJSvS3+4JQ=
+github.com/chopnico/device42-go v0.1.2-1/go.mod h1:qxnbyP9kMrNXYRZD+YY+z8K0kViIaunnPM+DKD20SA0=
 github.com/chopnico/output v0.1.8 h1:R7uKYRJbCUZzcFPhfr15lP3Lllr4RPbyRDYOQJGmI4M=
 github.com/chopnico/output v0.1.8/go.mod h1:rF4sbrZ9/UyvGAMsXIlZwVV5YCn1MQcIpGh35dAMJC8=
 github.com/chopnico/structs v1.1.0 h1:WizD00rf96OSZnHpQ2lGZliIfAo/6QLuZerhiohdaas=
