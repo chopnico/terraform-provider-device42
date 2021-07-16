@@ -1,6 +1,7 @@
 vendor/
 scratch/
 */provider.tf
+*.backup
 
 */private.yml
 private.yml

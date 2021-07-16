@@ -16,12 +16,16 @@ func dataSourceBuilding() *schema.Resource {
 		ReadContext: dataSourceBuildingRead,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:         schema.TypeInt,
+				Optional:     true,
+				Computed:     true,
+				AtLeastOneOf: []string{"id", "name"},
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				AtLeastOneOf: []string{"id", "name"},
 			},
 			"address": &schema.Schema{
 				Type:     schema.TypeString,
@@ -40,19 +44,35 @@ func dataSourceBuildingRead(ctx context.Context, d *schema.ResourceData, m inter
 	c := m.(*device42.Api)
 
 	var diags diag.Diagnostics
+	var err error
 
 	buildingId := d.Get("id").(int)
+	buildingName := d.Get("name").(string)
+	buildings := &[]device42.Building{}
 
-	buildings, err := c.GetBuildingById(buildingId)
-	building := (*buildings)[0]
-	if err != nil {
-		diags = append(diags, diag.Diagnostic{
-			Severity: diag.Error,
-			Summary:  "unable to get building with id " + strconv.Itoa(buildingId),
-			Detail:   err.Error(),
-		})
-		return diags
+	if buildingId != 0 {
+		buildings, err = c.GetBuildingById(buildingId)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "unable to get building with id " + strconv.Itoa(buildingId),
+				Detail:   err.Error(),
+			})
+			return diags
+		}
+	} else if buildingName != "" {
+		buildings, err = c.GetBuildingByName(buildingName)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "unable to get building with name " + buildingName,
+				Detail:   err.Error(),
+			})
+			return diags
+		}
 	}
+
+	building := (*buildings)[0]
 
 	c.WriteToDebugLog(fmt.Sprintf("%v", building))
 

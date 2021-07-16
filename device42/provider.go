@@ -40,10 +40,14 @@ func Provider() *schema.Provider {
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"device42_vrf_group": resourceVrfGroup(),
+			"device42_building":  resourceBuilding(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"device42_vrf_groups": dataSourceVrfGroups(),
 			"device42_vrf_group":  dataSourceVrfGroup(),
+			"device42_building":   dataSourceBuilding(),
+			"device42_buildings":  dataSourceBuildings(),
+			"device42_subnet":     dataSourceSubnet(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

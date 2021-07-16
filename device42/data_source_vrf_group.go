@@ -27,11 +27,11 @@ func dataSourceVrfGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"buildings": &schema.Schema{
+			"building_ids": &schema.Schema{
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Schema{
-					Type: schema.TypeString,
+					Type: schema.TypeInt,
 				},
 			},
 		},
@@ -58,9 +58,24 @@ func dataSourceVrfGroupRead(ctx context.Context, d *schema.ResourceData, m inter
 
 	c.WriteToDebugLog(fmt.Sprintf("%v", vrfGroup))
 
+	buildings := make([]int, len(d.Get("building_ids").([]interface{})))
+
+	for i, v := range d.Get("building_ids").([]interface{}) {
+		b, err := c.GetBuildingById(v.(int))
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "unable to get building with id " + strconv.Itoa(v.(int)),
+				Detail:   err.Error(),
+			})
+			return diags
+		}
+		buildings[i] = (*b)[0].BuildingID
+	}
+
 	d.Set("name", vrfGroup.Name)
 	d.Set("description", vrfGroup.Description)
-	d.Set("buildings", vrfGroup.Buildings)
+	d.Set("building_ids", buildings)
 
 	d.SetId(strconv.Itoa(vrfGroupId))
 

@@ -14,9 +14,9 @@ import (
 
 func resourceVrfGroup() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceVrfGroupUpdate,
+		CreateContext: resourceVrfGroupSet,
 		ReadContext:   resourceVrfGroupRead,
-		UpdateContext: resourceVrfGroupUpdate,
+		UpdateContext: resourceVrfGroupSet,
 		DeleteContext: resourceVrfGroupDelete,
 		Schema: map[string]*schema.Schema{
 			"last_updated": &schema.Schema{
@@ -32,11 +32,11 @@ func resourceVrfGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"buildings": &schema.Schema{
+			"building_ids": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Schema{
-					Type: schema.TypeString,
+					Type: schema.TypeInt,
 				},
 			},
 			"groups": &schema.Schema{
@@ -47,7 +47,7 @@ func resourceVrfGroup() *schema.Resource {
 	}
 }
 
-func resourceVrfGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceVrfGroupSet(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*device42.Api)
 
 	// Warning or errors can be collected in a slice type
@@ -55,11 +55,21 @@ func resourceVrfGroupUpdate(ctx context.Context, d *schema.ResourceData, m inter
 
 	log.Println(fmt.Sprintf("[DEBUG] buildings : %s", d.Get("buildings")))
 
-	buildings := make([]string, len(d.Get("buildings").([]interface{})))
+	buildings := make([]string, len(d.Get("building_ids").([]interface{})))
 
-	for i, v := range d.Get("buildings").([]interface{}) {
-		buildings[i] = fmt.Sprint(v)
+	for i, v := range d.Get("building_ids").([]interface{}) {
+		b, err := c.GetBuildingById(v.(int))
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "unable to get building with id " + strconv.Itoa(v.(int)),
+				Detail:   err.Error(),
+			})
+			return diags
+		}
+		buildings[i] = (*b)[0].Name
 	}
+
 	vrfGroup, err := c.SetVrfGroup(&device42.VrfGroup{
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),

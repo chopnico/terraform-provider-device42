@@ -12,12 +12,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceBuilding() *schema.Resource {
+func resourceSubnet() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceBuildingSet,
-		ReadContext:   resourceBuildingRead,
-		UpdateContext: resourceBuildingSet,
-		DeleteContext: resourceBuildingDelete,
+		CreateContext: resourceSubnetSet,
+		ReadContext:   resourceSubnetRead,
+		UpdateContext: resourceSubnetSet,
+		DeleteContext: resourceSubnetDelete,
 		Schema: map[string]*schema.Schema{
 			"last_updated": &schema.Schema{
 				Type:     schema.TypeString,
@@ -28,85 +28,91 @@ func resourceBuilding() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"address": &schema.Schema{
+			"network": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"notes": &schema.Schema{
-				Type:     schema.TypeString,
+			"mask_bits": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"vrf_group_id": &schema.Schema{
+				Type:     schema.TypeInt,
 				Optional: true,
 			},
 		},
 	}
 }
 
-func resourceBuildingSet(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceSubnetSet(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*device42.Api)
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	buildings, err := c.SetBuilding(&device42.Building{
+	log.Println(fmt.Sprintf("[DEBUG] subnet : %s", d.Get("subnets")))
+
+	subnet, err := c.SetSubnet(&device42.Subnet{
 		Name:    d.Get("name").(string),
-		Address: d.Get("address").(string),
-		Notes:   d.Get("notes").(string),
+		Network: d.Get("network").(string),
 	})
-
-	building := (*buildings)[0]
-
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "unable to create building with name " + d.Get("name").(string),
+			Summary:  "unable to create vrf group with name " + d.Get("name").(string),
 			Detail:   err.Error(),
 		})
 	}
 
-	log.Println(fmt.Sprintf("[DEBUG] building : %v", building))
+	log.Println(fmt.Sprintf("[DEBUG] subnet : %v", subnet))
 
-	d.SetId(strconv.Itoa(building.BuildingID))
+	d.SetId(strconv.Itoa(subnet.SubnetID))
 
-	resourceBuildingRead(ctx, d, m)
+	resourceVrfGroupRead(ctx, d, m)
 
 	return diags
 }
 
-func resourceBuildingRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceSubnetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*device42.Api)
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	buildingId, err := strconv.Atoi(d.Id())
+	subnetId, err := strconv.Atoi(d.Id())
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "unable to read building id",
+			Summary:  "unable to read id",
 			Detail:   err.Error(),
 		})
 		return diags
 	}
-	buildings, err := c.GetBuildingById(buildingId)
-	building := (*buildings)[0]
+	subnet, err := c.GetSubnetById(subnetId)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "unable to get building with id " + d.Id(),
+			Summary:  "unable to get vrf group with id " + d.Id(),
 			Detail:   err.Error(),
 		})
 		return diags
 	}
 
-	log.Println(fmt.Sprintf("[DEBUG] building : %v", building))
+	log.Println(fmt.Sprintf("[DEBUG] subnet : %v", subnet))
 
-	d.Set("name", building.Name)
-	d.Set("address", building.Address)
-	d.Set("notes", building.Notes)
+	d.Set("name", subnet.Name)
+	d.Set("network", subnet.Network)
+	d.Set("mask_bits", subnet.MaskBits)
+	d.Set("vrf_group_id", subnet.VrfGroupID)
 
 	return diags
 }
 
-func resourceBuildingDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+// delete vrf group
+func resourceSubnetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*device42.Api)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -116,17 +122,17 @@ func resourceBuildingDelete(ctx context.Context, d *schema.ResourceData, m inter
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "unable to get building id",
+			Summary:  "unable to get subnet id",
 			Detail:   err.Error(),
 		})
 		return diags
 	}
 
-	err = c.DeleteBuilding(id)
+	err = c.DeleteSubnet(id)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "unable to delete building with id " + d.Id(),
+			Summary:  "unable to delete subnet with id " + d.Id(),
 			Detail:   err.Error(),
 		})
 		return diags
