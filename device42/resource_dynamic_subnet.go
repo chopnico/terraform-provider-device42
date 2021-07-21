@@ -12,12 +12,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceSubnet() *schema.Resource {
+func resourceDynamicSubnet() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceSubnetSet,
-		ReadContext:   resourceSubnetRead,
-		UpdateContext: resourceSubnetSet,
-		DeleteContext: resourceSubnetDelete,
+		CreateContext: resourceDynamicSubnetSet,
+		ReadContext:   resourceDynamicSubnetRead,
+		UpdateContext: resourceDynamicSubnetSet,
+		DeleteContext: resourceDynamicSubnetDelete,
 		Schema: map[string]*schema.Schema{
 			"last_updated": &schema.Schema{
 				Type:     schema.TypeString,
@@ -27,23 +27,27 @@ func resourceSubnet() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"network": &schema.Schema{
-				Type:     schema.TypeString,
+			"parent_subnet_id": &schema.Schema{
+				Type:     schema.TypeInt,
 				Required: true,
 			},
 			"mask_bits": &schema.Schema{
 				Type:     schema.TypeInt,
 				Required: true,
 			},
+			"network": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"vrf_group_id": &schema.Schema{
 				Type:     schema.TypeInt,
-				Optional: true,
+				Computed: true,
 			},
 		},
 	}
 }
 
-func resourceSubnetSet(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceDynamicSubnetSet(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*device42.API)
 
 	// Warning or errors can be collected in a slice type
@@ -51,12 +55,12 @@ func resourceSubnetSet(ctx context.Context, d *schema.ResourceData, m interface{
 
 	log.Println(fmt.Sprintf("[DEBUG] subnet : %s", d.Get("subnets")))
 
-	subnet, err := c.SetSubnet(&device42.Subnet{
-		Name:       d.Get("name").(string),
-		Network:    d.Get("network").(string),
-		MaskBits:   d.Get("mask_bits").(int),
-		VrfGroupID: d.Get("vrf_group_id").(int),
-	})
+	subnet, err := c.SuggestSubnet(
+		d.Get("parent_subnet_id").(int),
+		d.Get("mask_bits").(int),
+		d.Get("name").(string),
+		true,
+	)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -74,7 +78,7 @@ func resourceSubnetSet(ctx context.Context, d *schema.ResourceData, m interface{
 	return diags
 }
 
-func resourceSubnetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceDynamicSubnetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*device42.API)
 
 	// Warning or errors can be collected in a slice type
@@ -104,13 +108,14 @@ func resourceSubnetRead(ctx context.Context, d *schema.ResourceData, m interface
 	_ = d.Set("name", subnet.Name)
 	_ = d.Set("network", subnet.Network)
 	_ = d.Set("mask_bits", subnet.MaskBits)
+	_ = d.Set("parenet_subnet_id", subnet.ParentSubnetID)
 	_ = d.Set("vrf_group_id", subnet.VrfGroupID)
 
 	return diags
 }
 
 // delete subnet
-func resourceSubnetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceDynamicSubnetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*device42.API)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics

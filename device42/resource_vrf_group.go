@@ -12,12 +12,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceVrfGroup() *schema.Resource {
+func resourceVRFGroup() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceVrfGroupSet,
-		ReadContext:   resourceVrfGroupRead,
-		UpdateContext: resourceVrfGroupSet,
-		DeleteContext: resourceVrfGroupDelete,
+		CreateContext: resourceVRFGroupSet,
+		ReadContext:   resourceVRFGroupRead,
+		UpdateContext: resourceVRFGroupSet,
+		DeleteContext: resourceVRFGroupDelete,
 		Schema: map[string]*schema.Schema{
 			"last_updated": &schema.Schema{
 				Type:     schema.TypeString,
@@ -39,16 +39,12 @@ func resourceVrfGroup() *schema.Resource {
 					Type: schema.TypeInt,
 				},
 			},
-			"groups": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 		},
 	}
 }
 
-func resourceVrfGroupSet(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*device42.Api)
+func resourceVRFGroupSet(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*device42.API)
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -58,7 +54,7 @@ func resourceVrfGroupSet(ctx context.Context, d *schema.ResourceData, m interfac
 	buildings := make([]string, len(d.Get("building_ids").([]interface{})))
 
 	for i, v := range d.Get("building_ids").([]interface{}) {
-		b, err := c.GetBuildingById(v.(int))
+		b, err := c.GetBuildingByID(v.(int))
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
@@ -67,14 +63,13 @@ func resourceVrfGroupSet(ctx context.Context, d *schema.ResourceData, m interfac
 			})
 			return diags
 		}
-		buildings[i] = (*b)[0].Name
+		buildings[i] = (*b).Name
 	}
 
-	vrfGroup, err := c.SetVrfGroup(&device42.VrfGroup{
+	vrfGroup, err := c.SetVRFGroup(&device42.VRFGroup{
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
 		Buildings:   buildings,
-		Groups:      d.Get("groups").(string),
 	})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
@@ -88,18 +83,18 @@ func resourceVrfGroupSet(ctx context.Context, d *schema.ResourceData, m interfac
 
 	d.SetId(strconv.Itoa(vrfGroup.ID))
 
-	resourceVrfGroupRead(ctx, d, m)
+	resourceVRFGroupRead(ctx, d, m)
 
 	return diags
 }
 
-func resourceVrfGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*device42.Api)
+func resourceVRFGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*device42.API)
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	vrfGroupId, err := strconv.Atoi(d.Id())
+	vrfGroupID, err := strconv.Atoi(d.Id())
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -108,7 +103,7 @@ func resourceVrfGroupRead(ctx context.Context, d *schema.ResourceData, m interfa
 		})
 		return diags
 	}
-	vrfGroup, err := c.GetVrfGroupById(vrfGroupId)
+	vrfGroup, err := c.GetVRFGroupByID(vrfGroupID)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -120,17 +115,16 @@ func resourceVrfGroupRead(ctx context.Context, d *schema.ResourceData, m interfa
 
 	log.Println(fmt.Sprintf("[DEBUG] vrf group : %v", vrfGroup))
 
-	d.Set("name", vrfGroup.Name)
-	d.Set("description", vrfGroup.Description)
-	d.Set("buildings", vrfGroup.Buildings)
-	d.Set("groups", vrfGroup.Groups)
+	_ = d.Set("name", vrfGroup.Name)
+	_ = d.Set("description", vrfGroup.Description)
+	_ = d.Set("buildings", vrfGroup.Buildings)
 
 	return diags
 }
 
 // delete vrf group
-func resourceVrfGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*device42.Api)
+func resourceVRFGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*device42.API)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
@@ -145,7 +139,7 @@ func resourceVrfGroupDelete(ctx context.Context, d *schema.ResourceData, m inter
 		return diags
 	}
 
-	err = c.DeleteVrfGroup(id)
+	err = c.DeleteVRFGroup(id)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

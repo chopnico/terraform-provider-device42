@@ -3,6 +3,7 @@ package device42
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 
 	device42 "github.com/chopnico/device42-go"
@@ -16,16 +17,23 @@ func dataSourceSubnet() *schema.Resource {
 		ReadContext: dataSourceSubnetRead,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:         schema.TypeInt,
+				Optional:     true,
+				Computed:     true,
+				AtLeastOneOf: []string{"id", "name"},
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				AtLeastOneOf: []string{"id", "name"},
+				RequiredWith: []string{"network"},
 			},
 			"network": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				RequiredWith: []string{"name"},
 			},
 			"mask_bits": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -41,30 +49,50 @@ func dataSourceSubnet() *schema.Resource {
 
 // get a building by id
 func dataSourceSubnetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*device42.Api)
+	c := m.(*device42.API)
 
 	var diags diag.Diagnostics
+	var err error
 
-	subnetId := d.Get("id").(int)
+	subnetID := d.Get("id").(int)
+	subnetName := d.Get("name").(string)
+	network := d.Get("network").(string)
+	subnet := &device42.Subnet{}
 
-	subnet, err := c.GetSubnetById(subnetId)
-	if err != nil {
-		diags = append(diags, diag.Diagnostic{
-			Severity: diag.Error,
-			Summary:  "unable to get subnet with id " + strconv.Itoa(subnetId),
-			Detail:   err.Error(),
-		})
-		return diags
+	if subnetID != 0 {
+		log.Printf("[DEBUG] subnet id: %d\n", subnetID)
+
+		subnet, err = c.GetSubnetByID(subnetID)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "unable to get subnet with id " + strconv.Itoa(subnetID),
+				Detail:   err.Error(),
+			})
+			return diags
+		}
+	} else if subnetName != "" && network != "" {
+		log.Printf("[DEBUG] subnet name: %s\n", subnetName)
+
+		subnet, err = c.GetSubnetByNameWithNetwork(subnetName, network)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "unable to get subnet with name " + subnetName,
+				Detail:   err.Error(),
+			})
+			return diags
+		}
 	}
 
 	c.WriteToDebugLog(fmt.Sprintf("%v", subnet))
 
-	d.Set("name", subnet.Name)
-	d.Set("network", subnet.Network)
-	d.Set("mask_bits", subnet.MaskBits)
-	d.Set("vrf_group_id", subnet.VrfGroupID)
+	_ = d.Set("name", subnet.Name)
+	_ = d.Set("network", subnet.Network)
+	_ = d.Set("mask_bits", subnet.MaskBits)
+	_ = d.Set("vrf_group_id", subnet.VrfGroupID)
 
-	d.SetId(strconv.Itoa(subnetId))
+	d.SetId(strconv.Itoa(subnet.SubnetID))
 
 	return diags
 }

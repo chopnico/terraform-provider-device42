@@ -2,7 +2,7 @@ package device42
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"strconv"
 
 	device42 "github.com/chopnico/device42-go"
@@ -41,27 +41,29 @@ func dataSourceBuilding() *schema.Resource {
 
 // get a building by id
 func dataSourceBuildingRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*device42.Api)
+	c := m.(*device42.API)
 
 	var diags diag.Diagnostics
 	var err error
 
-	buildingId := d.Get("id").(int)
+	buildingID := d.Get("id").(int)
 	buildingName := d.Get("name").(string)
-	buildings := &[]device42.Building{}
+	building := &device42.Building{}
 
-	if buildingId != 0 {
-		buildings, err = c.GetBuildingById(buildingId)
+	if buildingID != 0 {
+		log.Printf("[DEBUG] building id : %d", buildingID)
+		building, err = c.GetBuildingByID(buildingID)
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary:  "unable to get building with id " + strconv.Itoa(buildingId),
+				Summary:  "unable to get building with id " + strconv.Itoa(buildingID),
 				Detail:   err.Error(),
 			})
 			return diags
 		}
 	} else if buildingName != "" {
-		buildings, err = c.GetBuildingByName(buildingName)
+		log.Printf("[DEBUG] building name : %s", buildingName)
+		building, err = c.GetBuildingByName(buildingName)
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
@@ -72,15 +74,13 @@ func dataSourceBuildingRead(ctx context.Context, d *schema.ResourceData, m inter
 		}
 	}
 
-	building := (*buildings)[0]
+	log.Printf("[DEBUG] building : %v", building)
 
-	c.WriteToDebugLog(fmt.Sprintf("%v", building))
+	_ = d.Set("name", building.Name)
+	_ = d.Set("address", building.Address)
+	_ = d.Set("notes", building.Notes)
 
-	d.Set("name", building.Name)
-	d.Set("address", building.Address)
-	d.Set("notes", building.Notes)
-
-	d.SetId(strconv.Itoa(buildingId))
+	d.SetId(strconv.Itoa(building.BuildingID))
 
 	return diags
 }

@@ -41,18 +41,16 @@ func resourceBuilding() *schema.Resource {
 }
 
 func resourceBuildingSet(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*device42.Api)
+	c := m.(*device42.API)
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	buildings, err := c.SetBuilding(&device42.Building{
+	building, err := c.SetBuilding(&device42.Building{
 		Name:    d.Get("name").(string),
 		Address: d.Get("address").(string),
 		Notes:   d.Get("notes").(string),
 	})
-
-	building := (*buildings)[0]
 
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
@@ -72,12 +70,12 @@ func resourceBuildingSet(ctx context.Context, d *schema.ResourceData, m interfac
 }
 
 func resourceBuildingRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*device42.Api)
+	c := m.(*device42.API)
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	buildingId, err := strconv.Atoi(d.Id())
+	buildingID, err := strconv.Atoi(d.Id())
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -86,8 +84,7 @@ func resourceBuildingRead(ctx context.Context, d *schema.ResourceData, m interfa
 		})
 		return diags
 	}
-	buildings, err := c.GetBuildingById(buildingId)
-	building := (*buildings)[0]
+	building, err := c.GetBuildingByID(buildingID)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -99,15 +96,15 @@ func resourceBuildingRead(ctx context.Context, d *schema.ResourceData, m interfa
 
 	log.Println(fmt.Sprintf("[DEBUG] building : %v", building))
 
-	d.Set("name", building.Name)
-	d.Set("address", building.Address)
-	d.Set("notes", building.Notes)
+	_ = d.Set("name", building.Name)
+	_ = d.Set("address", building.Address)
+	_ = d.Set("notes", building.Notes)
 
 	return diags
 }
 
 func resourceBuildingDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*device42.Api)
+	c := m.(*device42.API)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 

@@ -20,6 +20,7 @@ func idsToString(ids []int) string {
 
 	return strings.Join(s, "")
 }
+
 func idsChecksum(ids []int) string {
 	return stringChecksum(idsToString(ids))
 }

@@ -39,15 +39,19 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"device42_vrf_group": resourceVrfGroup(),
-			"device42_building":  resourceBuilding(),
+			"device42_vrf_group":      resourceVRFGroup(),
+			"device42_building":       resourceBuilding(),
+			"device42_subnet":         resourceSubnet(),
+			"device42_dynamic_subnet": resourceDynamicSubnet(),
+			"device42_dynamic_ip":     resourceDynamicIP(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"device42_vrf_groups": dataSourceVrfGroups(),
-			"device42_vrf_group":  dataSourceVrfGroup(),
+			"device42_vrf_groups": dataSourceVRFGroups(),
+			"device42_vrf_group":  dataSourceVRFGroup(),
 			"device42_building":   dataSourceBuilding(),
 			"device42_buildings":  dataSourceBuildings(),
 			"device42_subnet":     dataSourceSubnet(),
+			"device42_ip":         dataSourceIP(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -63,7 +67,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	var diags diag.Diagnostics
 
 	if (username != "") && (password != "") && (host != "") {
-		c, err := device42.NewApiBasicAuth(username, password, host)
+		c, err := device42.NewAPIBasicAuth(username, password, host)
 		if err != nil {
 			return nil, diag.FromErr(err)
 		}
@@ -71,11 +75,10 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		c.Proxy(proxy)
 
 		if ignoreSsl {
-			c.IgnoreSslErrors()
+			c.IgnoreSSLErrors()
 		}
 
 		return c, diags
-	} else {
-		return nil, diag.Errorf("you must provide a username, a password, and the host of the device42 appliance")
 	}
+	return nil, diag.Errorf("you must provide a username, a password, and the host of the device42 appliance")
 }

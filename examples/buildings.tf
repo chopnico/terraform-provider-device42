@@ -1,27 +1,27 @@
 resource "device42_building" "sunset_arms" {
   name = "Sunset Arms"
   address = "4040 Vine Street"
-  notes = "arnold's house"
+  notes = "Arnold's house"
 }
 
 resource "device42_building" "ps_118" {
   name = "P.S. 118"
   address = "unknown"
-  notes = "arnold's school"
+  notes = "Arnold's school"
+}
+
+data "device42_building" "sunset_arms" {
+  name = resource.device42_building.sunset_arms.name
 }
 
 data "device42_building" "ps_118" {
-  name = "P.S. 118"
+  name = resource.device42_building.ps_118.name
 }
 
-resource "device42_vrf_group" "arnolds_room"{
-  name = "arnold's room"
-  description = "arnold's room"
-  building_ids = [
-    data.device42_building.ps_118.id
-  ]
+output "sunset_arms_building_id" {
+  value = data.device42_building.sunset_arms.id
 }
 
-data "device42_vrf_group" "test" {
-  id = 1
+output "ps_118_building_id" {
+  value = data.device42_building.ps_118.id
 }

@@ -41,9 +41,9 @@ func dataSourceBuildings() *schema.Resource {
 	}
 }
 
-// get vrf groups
+// get buildings
 func dataSourceBuildingsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*device42.Api)
+	c := m.(*device42.API)
 
 	var diags diag.Diagnostics
 
@@ -79,7 +79,7 @@ func dataSourceBuildingsRead(ctx context.Context, d *schema.ResourceData, m inte
 	return diags
 }
 
-// flatten vrf groups to a map
+// flatten buildings to a map
 func flattenBuildingsData(buildings *[]device42.Building) []interface{} {
 	if buildings != nil {
 		bs := make([]interface{}, len(*buildings))

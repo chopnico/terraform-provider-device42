@@ -11,17 +11,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceVrfGroup() *schema.Resource {
+func dataSourceVRFGroup() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceVrfGroupRead,
+		ReadContext: dataSourceVRFGroupRead,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:         schema.TypeInt,
+				Optional:     true,
+				Computed:     true,
+				AtLeastOneOf: []string{"id", "name"},
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				AtLeastOneOf: []string{"id", "name"},
 			},
 			"description": &schema.Schema{
 				Type:     schema.TypeString,
@@ -39,29 +43,48 @@ func dataSourceVrfGroup() *schema.Resource {
 }
 
 // get a vrf group by id
-func dataSourceVrfGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c := m.(*device42.Api)
+func dataSourceVRFGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*device42.API)
 
 	var diags diag.Diagnostics
+	var err error
 
-	vrfGroupId := d.Get("id").(int)
+	vrfGroupID := d.Get("id").(int)
+	vrfGroupName := d.Get("name").(string)
+	vrfGroup := &device42.VRFGroup{}
 
-	vrfGroup, err := c.GetVrfGroupById(vrfGroupId)
-	if err != nil {
-		diags = append(diags, diag.Diagnostic{
-			Severity: diag.Error,
-			Summary:  "unable to get vrf group with id " + strconv.Itoa(vrfGroupId),
-			Detail:   err.Error(),
-		})
-		return diags
+	if vrfGroupID != 0 {
+		fmt.Printf("[DEBUG] vrf group id : %d\n", vrfGroupID)
+		vrfGroup, err = c.GetVRFGroupByID(vrfGroupID)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "unable to get vrf group with id " + strconv.Itoa(vrfGroupID),
+				Detail:   err.Error(),
+			})
+			return diags
+		}
+	} else if vrfGroupName != "" {
+		fmt.Printf("[DEBUG] vrf group name %s\n", vrfGroupName)
+		vrfGroup, err = c.GetVRFGroupByName(vrfGroupName)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "unable to get vrf group with name " + vrfGroupName,
+				Detail:   err.Error(),
+			})
+			return diags
+		}
 	}
+
+	fmt.Printf("[DEBUG] vrf group : %v\n", vrfGroup)
 
 	c.WriteToDebugLog(fmt.Sprintf("%v", vrfGroup))
 
 	buildings := make([]int, len(d.Get("building_ids").([]interface{})))
 
 	for i, v := range d.Get("building_ids").([]interface{}) {
-		b, err := c.GetBuildingById(v.(int))
+		b, err := c.GetBuildingByID(v.(int))
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
@@ -70,14 +93,14 @@ func dataSourceVrfGroupRead(ctx context.Context, d *schema.ResourceData, m inter
 			})
 			return diags
 		}
-		buildings[i] = (*b)[0].BuildingID
+		buildings[i] = (*b).BuildingID
 	}
 
-	d.Set("name", vrfGroup.Name)
-	d.Set("description", vrfGroup.Description)
-	d.Set("building_ids", buildings)
+	_ = d.Set("name", vrfGroup.Name)
+	_ = d.Set("description", vrfGroup.Description)
+	_ = d.Set("building_ids", buildings)
 
-	d.SetId(strconv.Itoa(vrfGroupId))
+	d.SetId(strconv.Itoa(vrfGroup.ID))
 
 	return diags
 }
