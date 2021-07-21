@@ -3,6 +3,7 @@ resource "device42_subnet" "arnolds_room" {
   network = "172.168.200.0"
   mask_bits = "24"
   vrf_group_id = resource.device42_vrf_group.arnolds_room.id
+  tags = ["prod"]
 }
 
 resource "device42_subnet" "ps_118_history_class" {
@@ -10,6 +11,7 @@ resource "device42_subnet" "ps_118_history_class" {
   network = "172.168.201.0"
   mask_bits = "24"
   vrf_group_id = resource.device42_vrf_group.ps_118_history_class.id
+  tags = ["prod"]
 }
 
 data "device42_subnet" "arnolds_room" {

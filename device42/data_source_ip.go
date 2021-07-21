@@ -19,16 +19,14 @@ func dataSourceIP() *schema.Resource {
 			"id": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
-				Computed: true,
 			},
 			"label": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
 			},
 			"address": &schema.Schema{
 				Type:         schema.TypeString,
-				Computed:     true,
+				Optional:     true,
 				RequiredWith: []string{"subnet_id"},
 			},
 			"mac_address": &schema.Schema{
@@ -37,8 +35,8 @@ func dataSourceIP() *schema.Resource {
 			},
 			"subnet_id": &schema.Schema{
 				Type:         schema.TypeInt,
+				Optional:     true,
 				RequiredWith: []string{"address"},
-				Computed:     true,
 			},
 			"subnet": &schema.Schema{
 				Type:     schema.TypeString,

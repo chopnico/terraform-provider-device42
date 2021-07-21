@@ -43,6 +43,14 @@ func resourceDynamicSubnet() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
+			"tags": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -67,9 +75,22 @@ func resourceDynamicSubnetSet(ctx context.Context, d *schema.ResourceData, m int
 			Summary:  "unable to create subnet with name " + d.Get("name").(string),
 			Detail:   err.Error(),
 		})
+		return diags
 	}
 
 	log.Println(fmt.Sprintf("[DEBUG] subnet : %v", subnet))
+
+	subnet.Tags = interfaceSliceToStringSlice(d.Get("tags").([]interface{}))
+
+	subnet, err = c.SetSubnet(subnet)
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "unable to create subnet with name " + d.Get("name").(string),
+			Detail:   err.Error(),
+		})
+		return diags
+	}
 
 	d.SetId(strconv.Itoa(subnet.SubnetID))
 
@@ -110,6 +131,7 @@ func resourceDynamicSubnetRead(ctx context.Context, d *schema.ResourceData, m in
 	_ = d.Set("mask_bits", subnet.MaskBits)
 	_ = d.Set("parenet_subnet_id", subnet.ParentSubnetID)
 	_ = d.Set("vrf_group_id", subnet.VrfGroupID)
+	_ = d.Set("tags", subnet.Tags)
 
 	return diags
 }

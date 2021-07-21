@@ -21,7 +21,6 @@ func resourceBuilding() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"last_updated": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"name": &schema.Schema{

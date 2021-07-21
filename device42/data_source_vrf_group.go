@@ -18,13 +18,11 @@ func dataSourceVRFGroup() *schema.Resource {
 			"id": &schema.Schema{
 				Type:         schema.TypeInt,
 				Optional:     true,
-				Computed:     true,
 				AtLeastOneOf: []string{"id", "name"},
 			},
 			"name": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
-				Computed:     true,
 				AtLeastOneOf: []string{"id", "name"},
 			},
 			"description": &schema.Schema{

@@ -39,6 +39,13 @@ func resourceSubnet() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"tags": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -51,11 +58,14 @@ func resourceSubnetSet(ctx context.Context, d *schema.ResourceData, m interface{
 
 	log.Println(fmt.Sprintf("[DEBUG] subnet : %s", d.Get("subnets")))
 
+	tags := interfaceSliceToStringSlice(d.Get("tags").([]interface{}))
+
 	subnet, err := c.SetSubnet(&device42.Subnet{
 		Name:       d.Get("name").(string),
 		Network:    d.Get("network").(string),
 		MaskBits:   d.Get("mask_bits").(int),
 		VrfGroupID: d.Get("vrf_group_id").(int),
+		Tags:       tags,
 	})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
@@ -105,6 +115,7 @@ func resourceSubnetRead(ctx context.Context, d *schema.ResourceData, m interface
 	_ = d.Set("network", subnet.Network)
 	_ = d.Set("mask_bits", subnet.MaskBits)
 	_ = d.Set("vrf_group_id", subnet.VrfGroupID)
+	_ = d.Set("tags", subnet.Tags)
 
 	return diags
 }

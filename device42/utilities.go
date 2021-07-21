@@ -24,3 +24,11 @@ func idsToString(ids []int) string {
 func idsChecksum(ids []int) string {
 	return stringChecksum(idsToString(ids))
 }
+
+func interfaceSliceToStringSlice(i []interface{}) []string {
+	var s []string = make([]string, len(i))
+	for n, d := range i {
+		s[n] = fmt.Sprintf("%v", d)
+	}
+	return s
+}

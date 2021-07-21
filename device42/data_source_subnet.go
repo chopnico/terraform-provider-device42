@@ -19,20 +19,17 @@ func dataSourceSubnet() *schema.Resource {
 			"id": &schema.Schema{
 				Type:         schema.TypeInt,
 				Optional:     true,
-				Computed:     true,
 				AtLeastOneOf: []string{"id", "name"},
 			},
 			"name": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
-				Computed:     true,
 				AtLeastOneOf: []string{"id", "name"},
 				RequiredWith: []string{"network"},
 			},
 			"network": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
-				Computed:     true,
 				RequiredWith: []string{"name"},
 			},
 			"mask_bits": &schema.Schema{
@@ -42,6 +39,13 @@ func dataSourceSubnet() *schema.Resource {
 			"vrf_group_id": &schema.Schema{
 				Type:     schema.TypeInt,
 				Computed: true,
+			},
+			"tags": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 		},
 	}
@@ -91,6 +95,7 @@ func dataSourceSubnetRead(ctx context.Context, d *schema.ResourceData, m interfa
 	_ = d.Set("network", subnet.Network)
 	_ = d.Set("mask_bits", subnet.MaskBits)
 	_ = d.Set("vrf_group_id", subnet.VrfGroupID)
+	_ = d.Set("tags", subnet.Tags)
 
 	d.SetId(strconv.Itoa(subnet.SubnetID))
 
