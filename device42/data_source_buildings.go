@@ -11,6 +11,7 @@ import (
 
 func dataSourceBuildings() *schema.Resource {
 	return &schema.Resource{
+		Description: "`device42_buildings` data source will retrieve all buildings",
 		ReadContext: dataSourceBuildingsRead,
 		Schema: map[string]*schema.Schema{
 			"buildings": &schema.Schema{
