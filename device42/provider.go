@@ -15,27 +15,33 @@ func Provider() *schema.Provider {
 		Schema: map[string]*schema.Schema{
 			"username": &schema.Schema{
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("DEVICE42_USERNAME", nil),
+				Description: "A user who has access to the Device42 appliance's API.",
 			},
 			"password": &schema.Schema{
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("DEVICE42_PASSWORD", nil),
+				Description: "The password for the user who has access to the Device42 appliance's API.",
 			},
 			"host": &schema.Schema{
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("DEVICE42_HOST", nil),
+				Description: "The hostname of the Device42 appliance.",
 			},
 			"proxy": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "A HTTP/s proxy address. (e.g., https://device42.local)",
 			},
 			"ignore_ssl": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Disables SSL checking, ignoring all errors. (Your call...)",
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{

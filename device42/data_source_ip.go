@@ -14,33 +14,40 @@ import (
 
 func dataSourceIP() *schema.Resource {
 	return &schema.Resource{
+		Description: "`device42_ip` data source can be used to retrieve a single IP using its `address` and a `subnet_id`.",
 		ReadContext: dataSourceIPRead,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
+				Description: "The `id` of an IP.",
+				Type:        schema.TypeInt,
+				Optional:    true,
 			},
 			"label": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "The `lablel` of the IP.",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"address": &schema.Schema{
+				Description:  "The `address` of the IP.",
 				Type:         schema.TypeString,
 				Optional:     true,
 				RequiredWith: []string{"subnet_id"},
 			},
 			"mac_address": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "The `mac_address` of the IP.",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"subnet_id": &schema.Schema{
+				Description:  "The `subnet_id` of the IP.",
 				Type:         schema.TypeInt,
 				Optional:     true,
 				RequiredWith: []string{"address"},
 			},
 			"subnet": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "The `subnet` of the IP. (e.g., 192.168.0.0/24)",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 		},
 	}

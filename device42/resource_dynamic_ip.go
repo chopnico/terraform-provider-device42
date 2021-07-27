@@ -14,50 +14,61 @@ import (
 
 func resourceDynamicIP() *schema.Resource {
 	return &schema.Resource{
+		Description: "`device42_dynamic_ip` data resource can be used to generate a new IP address by " +
+			"either using a `subnet` or a `subnet_id` or by using a `vrf_group_name` or a `vrf_group_id`.",
 		CreateContext: resourceDynamicIPSet,
 		ReadContext:   resourceDynamicIPRead,
 		UpdateContext: resourceDynamicIPSet,
 		DeleteContext: resourceDynamicIPDelete,
 		Schema: map[string]*schema.Schema{
 			"last_updated": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "The last time this resource was updated.",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"id": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "The `id` of this IP.",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"address": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "The `address` of this IP.",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"label": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "The `label` for the IP.",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"mask_bits": &schema.Schema{
-				Type:     schema.TypeInt,
-				Required: true,
+				Description: "The `mask_bits` for the IP.",
+				Type:        schema.TypeInt,
+				Required:    true,
 			},
 			"subnet": &schema.Schema{
+				Description:   "The `subnet` for the IP.",
 				Type:          schema.TypeString,
 				Optional:      true,
 				Computed:      true,
 				ConflictsWith: []string{"subnet_id", "vrf_group", "vrf_group_id"},
 			},
 			"subnet_id": &schema.Schema{
+				Description:   "The `subnet_id` for the IP.",
 				Type:          schema.TypeInt,
 				Optional:      true,
 				Computed:      true,
 				ConflictsWith: []string{"subnet", "vrf_group", "vrf_group_id"},
 			},
 			"vrf_group": &schema.Schema{
+				Description:   "The `vrf_group` for the IP.",
 				Type:          schema.TypeString,
 				Optional:      true,
 				Computed:      true,
 				ConflictsWith: []string{"subnet", "subnet_id", "vrf_group_id"},
 			},
 			"vrf_group_id": &schema.Schema{
+				Description:   "The `vrf_group_id` for the IP.",
 				Type:          schema.TypeInt,
 				Optional:      true,
 				ConflictsWith: []string{"subnet", "subnet_id", "vrf_group"},

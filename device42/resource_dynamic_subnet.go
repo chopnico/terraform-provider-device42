@@ -14,39 +14,47 @@ import (
 
 func resourceDynamicSubnet() *schema.Resource {
 	return &schema.Resource{
+		Description:   "`device42_dynamic_subnet` resource can be used to generate a new subnet.",
 		CreateContext: resourceDynamicSubnetSet,
 		ReadContext:   resourceDynamicSubnetRead,
 		UpdateContext: resourceDynamicSubnetSet,
 		DeleteContext: resourceDynamicSubnetDelete,
 		Schema: map[string]*schema.Schema{
 			"last_updated": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "The last time this resource was updated.",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "The `name` of the dynamic subnet.",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"parent_subnet_id": &schema.Schema{
-				Type:     schema.TypeInt,
-				Required: true,
+				Description: "The `parent_subnet_id` of the dynamic subnet.",
+				Type:        schema.TypeInt,
+				Required:    true,
 			},
 			"mask_bits": &schema.Schema{
-				Type:     schema.TypeInt,
-				Required: true,
+				Description: "The `mask_bits` of the dynamic subnet.",
+				Type:        schema.TypeInt,
+				Required:    true,
 			},
 			"network": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "The `network` of this dynamic subnet.",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"vrf_group_id": &schema.Schema{
-				Type:     schema.TypeInt,
-				Computed: true,
+				Description: "The `vrf_group_id` of this dynamic subnet.",
+				Type:        schema.TypeInt,
+				Computed:    true,
 			},
 			"tags": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Computed: true,
+				Description: "The `tags` of the dynamic subnet.",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},

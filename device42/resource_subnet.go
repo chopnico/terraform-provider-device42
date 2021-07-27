@@ -14,34 +14,41 @@ import (
 
 func resourceSubnet() *schema.Resource {
 	return &schema.Resource{
+		Description:   "`device42_subnet` resource can be used to create, update or delete a subnet.",
 		CreateContext: resourceSubnetSet,
 		ReadContext:   resourceSubnetRead,
 		UpdateContext: resourceSubnetSet,
 		DeleteContext: resourceSubnetDelete,
 		Schema: map[string]*schema.Schema{
 			"last_updated": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "The last time this resource was updated.",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "The `name` of the subnet.",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"network": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "The `network` of the subnet.",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"mask_bits": &schema.Schema{
-				Type:     schema.TypeInt,
-				Required: true,
+				Description: "The `mask_bits` of the subnet.",
+				Type:        schema.TypeInt,
+				Required:    true,
 			},
 			"vrf_group_id": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
+				Description: "The `vrf_group_id` of the subnet.",
+				Type:        schema.TypeInt,
+				Optional:    true,
 			},
 			"tags": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
+				Description: "The `tags` for this subnet.",
+				Type:        schema.TypeList,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},

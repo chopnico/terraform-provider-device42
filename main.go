@@ -7,6 +7,9 @@ import (
 	"github.com/chopnico/terraform-provider-device42/device42"
 )
 
+// Generate docs for website
+//go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+
 func main() {
 	plugin.Serve(&plugin.ServeOpts{
 		ProviderFunc: func() *schema.Provider {

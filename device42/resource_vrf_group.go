@@ -14,26 +14,31 @@ import (
 
 func resourceVRFGroup() *schema.Resource {
 	return &schema.Resource{
+		Description:   "`device42_vrf_group` resource can be used to create, update, or delete a VRF group.",
 		CreateContext: resourceVRFGroupSet,
 		ReadContext:   resourceVRFGroupRead,
 		UpdateContext: resourceVRFGroupSet,
 		DeleteContext: resourceVRFGroupDelete,
 		Schema: map[string]*schema.Schema{
 			"last_updated": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "The last time this resource was updated.",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "The `name` of the VRF group.",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "The `description` of the VRF group.",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"building_ids": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
+				Description: "The `building_ids` of the VRF group.",
+				Type:        schema.TypeList,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},
