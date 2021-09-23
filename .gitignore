@@ -18,3 +18,4 @@ terragrunt-debug.tfvars.json
 
 # other
 .vscode
+*.tmp
