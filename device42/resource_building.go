@@ -50,6 +50,8 @@ func resourceBuildingSet(ctx context.Context, d *schema.ResourceData, m interfac
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
+	log.Println(fmt.Sprintf("[DEBUG] building name : %s", d.Get("name").(string)))
+
 	building, err := c.SetBuilding(&device42.Building{
 		Name:    d.Get("name").(string),
 		Address: d.Get("address").(string),
@@ -62,6 +64,7 @@ func resourceBuildingSet(ctx context.Context, d *schema.ResourceData, m interfac
 			Summary:  "unable to create building with name " + d.Get("name").(string),
 			Detail:   err.Error(),
 		})
+		return diags
 	}
 
 	log.Println(fmt.Sprintf("[DEBUG] building : %v", building))

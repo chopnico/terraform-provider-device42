@@ -8,7 +8,7 @@ OS_ARCH=linux_amd64
 default: install
 
 build:
-#	go mod vendor
+#	go mod vendor // breaks emacs for some damn reason...
 	go fmt ./...
 	go build -o /tmp/${BINARY}
 

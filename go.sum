@@ -70,6 +70,8 @@ github.com/bgentry/speakeasy v0.1.0 h1:ByYyxL9InA1OWqxJqqp2A5pYHUrCiAL6K3J+LKSsQ
 github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cheggaaa/pb v1.0.27/go.mod h1:pQciLPpbU0oxA0h+VJYYLxO+XeDQb5pZijXscXHm81s=
+github.com/chopnico/device42-go v0.1.5-1 h1:neAPH/TzOmixmLZrwOhRhUAjenJDcHjP6Y+Q8oZZQdc=
+github.com/chopnico/device42-go v0.1.5-1/go.mod h1:BNEZJfttzz0SmVKxdjJ3B2+5VPyjJj9+3blGeLaynqw=
 github.com/chopnico/device42-go v0.1.5 h1:OzFpGuJanKc5CKfAzWCdw8kCpomkmfXtuhtugEv2w+4=
 github.com/chopnico/device42-go v0.1.5/go.mod h1:BNEZJfttzz0SmVKxdjJ3B2+5VPyjJj9+3blGeLaynqw=
 github.com/chopnico/output v0.1.8 h1:R7uKYRJbCUZzcFPhfr15lP3Lllr4RPbyRDYOQJGmI4M=
