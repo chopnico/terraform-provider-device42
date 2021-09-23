@@ -14,35 +14,42 @@ import (
 
 func dataSourceSubnet() *schema.Resource {
 	return &schema.Resource{
+		Description: "`device42_subnet` data source can be used to retrieve a single subnet using its `name` and `network` or just by its `id`.",
 		ReadContext: dataSourceSubnetRead,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
+				Description:  "The `id` of a subnet.",
 				Type:         schema.TypeInt,
 				Optional:     true,
 				AtLeastOneOf: []string{"id", "name"},
 			},
 			"name": &schema.Schema{
+				Description:  "The `name` of the subnet.",
 				Type:         schema.TypeString,
 				Optional:     true,
 				AtLeastOneOf: []string{"id", "name"},
 				RequiredWith: []string{"network"},
 			},
 			"network": &schema.Schema{
+				Description:  "The `network` of the subnet. (e.g., 192.168.0.0/24)",
 				Type:         schema.TypeString,
 				Optional:     true,
 				RequiredWith: []string{"name"},
 			},
 			"mask_bits": &schema.Schema{
-				Type:     schema.TypeInt,
-				Computed: true,
+				Description: "The `mask_bits` of the subnet.",
+				Type:        schema.TypeInt,
+				Computed:    true,
 			},
 			"vrf_group_id": &schema.Schema{
-				Type:     schema.TypeInt,
-				Computed: true,
+				Description: "The `vrf_group_id` of the subnet.",
+				Type:        schema.TypeInt,
+				Computed:    true,
 			},
 			"tags": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
+				Description: "All`tags` for a subnet.",
+				Type:        schema.TypeList,
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},

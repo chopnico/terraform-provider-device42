@@ -14,26 +14,31 @@ import (
 
 func resourceBuilding() *schema.Resource {
 	return &schema.Resource{
+		Description:   "`device42_building` resource can be used to create, update and delete buildings.",
 		CreateContext: resourceBuildingSet,
 		ReadContext:   resourceBuildingRead,
 		UpdateContext: resourceBuildingSet,
 		DeleteContext: resourceBuildingDelete,
 		Schema: map[string]*schema.Schema{
 			"last_updated": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "When the resource was last updated.",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "The `name` of the building.",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"address": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "The `address` of the building.",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"notes": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "`notes` for the building.",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 		},
 	}

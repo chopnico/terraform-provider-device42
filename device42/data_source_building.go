@@ -13,25 +13,30 @@ import (
 
 func dataSourceBuilding() *schema.Resource {
 	return &schema.Resource{
+		Description: "`device42_building` data source can be used to retrieve a single building using its `id` or `name`.",
 		ReadContext: dataSourceBuildingRead,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:         schema.TypeInt,
 				Optional:     true,
 				AtLeastOneOf: []string{"id", "name"},
+				Description:  "The `id` of a building.",
 			},
 			"name": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
 				AtLeastOneOf: []string{"id", "name"},
+				Description:  "The `name` of a building.",
 			},
 			"address": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The `address` of a building.",
 			},
 			"notes": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "`notes` for a building.",
 			},
 		},
 	}

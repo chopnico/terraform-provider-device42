@@ -11,7 +11,7 @@ import (
 
 func dataSourceBuildings() *schema.Resource {
 	return &schema.Resource{
-		Description: "`device42_buildings` data source will retrieve all buildings",
+		Description: "`device42_buildings` data source can be used to retrieve all buildings.",
 		ReadContext: dataSourceBuildingsRead,
 		Schema: map[string]*schema.Schema{
 			"buildings": &schema.Schema{
@@ -20,20 +20,24 @@ func dataSourceBuildings() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": &schema.Schema{
-							Type:     schema.TypeInt,
-							Computed: true,
+							Description: "The `id` of this building.",
+							Type:        schema.TypeInt,
+							Computed:    true,
 						},
 						"name": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
+							Description: "The `name` of this building.",
+							Type:        schema.TypeString,
+							Computed:    true,
 						},
 						"address": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
+							Description: "The `address` of this building.",
+							Type:        schema.TypeString,
+							Computed:    true,
 						},
 						"notes": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
+							Description: "`notes` on this building.",
+							Type:        schema.TypeString,
+							Computed:    true,
 						},
 					},
 				},

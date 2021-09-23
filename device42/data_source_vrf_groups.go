@@ -11,28 +11,34 @@ import (
 
 func dataSourceVRFGroups() *schema.Resource {
 	return &schema.Resource{
+		Description: "`device42_vrf_groups` can be used to retrieve all VRF groups.",
 		ReadContext: dataSourceVRFGroupsRead,
 		Schema: map[string]*schema.Schema{
 			"vrf_groups": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "All `vrf_groups`",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": &schema.Schema{
-							Type:     schema.TypeInt,
-							Computed: true,
+							Description: "The `id` of the VRF group.",
+							Type:        schema.TypeInt,
+							Computed:    true,
 						},
 						"name": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
+							Description: "The `name` of the VRF group.",
+							Type:        schema.TypeString,
+							Computed:    true,
 						},
 						"description": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
+							Description: "The `description` of the VRF group.",
+							Type:        schema.TypeString,
+							Computed:    true,
 						},
 						"buildings": &schema.Schema{
-							Type:     schema.TypeList,
-							Computed: true,
+							Description: "The `buildings` of the VRF group.",
+							Type:        schema.TypeList,
+							Computed:    true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
