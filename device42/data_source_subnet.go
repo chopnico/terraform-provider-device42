@@ -45,6 +45,7 @@ func dataSourceSubnet() *schema.Resource {
 				Description: "The `vrf_group_id` of the subnet.",
 				Type:        schema.TypeInt,
 				Computed:    true,
+				Optional:    true,
 			},
 			"tags": &schema.Schema{
 				Description: "All`tags` for a subnet.",
