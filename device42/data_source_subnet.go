@@ -26,13 +26,11 @@ func dataSourceSubnet() *schema.Resource {
 				Description:  "The `name` of the subnet.",
 				Type:         schema.TypeString,
 				Optional:     true,
-				RequiredWith: []string{"network"},
 			},
 			"network": &schema.Schema{
 				Description:  "The `network` of the subnet. (e.g., 192.168.0.0/24)",
 				Type:         schema.TypeString,
 				Optional:     true,
-				RequiredWith: []string{"name"},
 			},
 			"mask_bits": &schema.Schema{
 				Description: "The `mask_bits` of the subnet.",
