@@ -28,7 +28,7 @@ func resourceDynamicIP() *schema.Resource {
 			},
 			"id": &schema.Schema{
 				Description: "The `id` of this IP.",
-				Type:        schema.TypeString,
+				Type:        schema.TypeInt,
 				Computed:    true,
 			},
 			"address": &schema.Schema{
@@ -76,6 +76,37 @@ func resourceDynamicIP() *schema.Resource {
 		},
 	}
 }
+func resourceDynamicIPUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*device42.API)
+
+	var diags diag.Diagnostics
+	var err error
+
+	ipID := d.Get("id").(int)
+	ipSubnetID := d.Get("subnet_id").(int)
+	ipVRFGroup := d.Get("vrf_group").(string)
+	ipVRFGroupID := d.Get("vrf_group_id").(int)
+	ipLabel := d.Get("label").(string)
+
+	ip, err := c.GetIPByID(ipID)
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "unable to suggest ip",
+			Detail:   err.Error(),
+		})
+		return diags
+	}
+
+	log.Println(fmt.Sprintf("[DEBUG] ip : %v", ip))
+
+	_ = d.Set("label", ipLabel)
+	_ = d.Set("subnet_id", ipSubnetID)
+	_ = d.Set("vrf_group_id", ipVRFGroupID)
+	_ = d.Set("vrf_group", ipVRFGroup)
+
+	return diags
+}
 
 func resourceDynamicIPSet(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*device42.API)
@@ -85,7 +116,7 @@ func resourceDynamicIPSet(ctx context.Context, d *schema.ResourceData, m interfa
 
 	log.Println(fmt.Sprintf("[DEBUG] ip : %s", d.Get("ip")))
 
-	ipID := d.Get("id").(string)
+	ipID := d.Get("id").(int)
 	ipMaskBits := d.Get("mask_bits").(int)
 	ipSubnet := d.Get("subnet").(string)
 	ipSubnetID := d.Get("subnet_id").(int)
@@ -95,7 +126,7 @@ func resourceDynamicIPSet(ctx context.Context, d *schema.ResourceData, m interfa
 
 	ip := &device42.IP{}
 
-	if ipID == "" {
+	if ipID == 0 {
 		if ipSubnetID != 0 {
 			ip, err = c.SuggestIPWithSubnetID(ipSubnetID, ipMaskBits, true)
 		} else if ipSubnet != "" {

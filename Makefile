@@ -8,7 +8,6 @@ OS_ARCH=linux_amd64
 default: install
 
 build:
-#	go mod vendor
 	go fmt ./...
 	go build -o /tmp/${BINARY}
 

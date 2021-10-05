@@ -20,6 +20,11 @@ func dataSourceSubnets() *schema.Resource {
 				Type:        schema.TypeInt,
 				Optional:    true,
 			},
+			"parent_subnet_id": &schema.Schema{
+				Description: "Filter by `parent_subnet_id`",
+				Type:        schema.TypeInt,
+				Optional:    true,
+			},
 			"subnets": &schema.Schema{
 				Type:        schema.TypeList,
 				Computed:    true,
@@ -66,7 +71,9 @@ func dataSourceSubnets() *schema.Resource {
 // get subnets
 func dataSourceSubnetsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*device42.API)
+
 	vrfGroupID := d.Get("vrf_group_id").(int)
+	parentSubnetID := d.Get("parent_subnet_id").(int)
 
 	var diags diag.Diagnostics
 	var err error
@@ -74,6 +81,8 @@ func dataSourceSubnetsRead(ctx context.Context, d *schema.ResourceData, m interf
 
 	if d.Get("vrf_group_id") != 0 {
 		subnets, err = c.GetSubnetsByVRFGroupID(vrfGroupID)
+	} else if d.Get("parent_subnet_id") != 0 {
+		subnets, err = c.GetSubnetsByParentSubnetID(parentSubnetID)
 	} else {
 		subnets, err = c.GetSubnets()
 	}

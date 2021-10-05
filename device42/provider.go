@@ -51,6 +51,7 @@ func Provider() *schema.Provider {
 			"device42_vlan":           resourceVLAN(),
 			"device42_dynamic_subnet": resourceDynamicSubnet(),
 			"device42_dynamic_ip":     resourceDynamicIP(),
+			"device42_resource_ip":		resourceIP(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"device42_vrf_groups": dataSourceVRFGroups(),
