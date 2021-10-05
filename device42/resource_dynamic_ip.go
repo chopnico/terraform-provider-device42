@@ -28,7 +28,7 @@ func resourceDynamicIP() *schema.Resource {
 			},
 			"id": &schema.Schema{
 				Description: "The `id` of this IP.",
-				Type:        schema.TypeInt,
+				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"address": &schema.Schema{
