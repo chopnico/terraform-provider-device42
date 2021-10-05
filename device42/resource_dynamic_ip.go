@@ -116,7 +116,7 @@ func resourceDynamicIPSet(ctx context.Context, d *schema.ResourceData, m interfa
 
 	log.Println(fmt.Sprintf("[DEBUG] ip : %s", d.Get("ip")))
 
-	ipID := d.Get("id").(int)
+	ipID := d.Get("id").(string)
 	ipMaskBits := d.Get("mask_bits").(int)
 	ipSubnet := d.Get("subnet").(string)
 	ipSubnetID := d.Get("subnet_id").(int)
@@ -126,7 +126,7 @@ func resourceDynamicIPSet(ctx context.Context, d *schema.ResourceData, m interfa
 
 	ip := &device42.IP{}
 
-	if ipID == 0 {
+	if ipID == "" {
 		if ipSubnetID != 0 {
 			ip, err = c.SuggestIPWithSubnetID(ipSubnetID, ipMaskBits, true)
 		} else if ipSubnet != "" {

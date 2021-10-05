@@ -27,14 +27,14 @@ func resourceIP() *schema.Resource {
 			},
 			"id": &schema.Schema{
 				Description: "The `id` of the IP.",
-				Type:        schema.TypeInt,
+				Type:        schema.TypeString,
 				Optional:    true,
-				Computed: true,
+				Computed:    true,
 			},
 			"address": &schema.Schema{
 				Description: "The IP `address`",
 				Type:        schema.TypeString,
-				Required: true,
+				Required:    true,
 			},
 			"label": &schema.Schema{
 				Description: "The IP `label`",
@@ -43,18 +43,18 @@ func resourceIP() *schema.Resource {
 			"vrf_group": &schema.Schema{
 				Description: "The `vrf_group` for the IP IP.",
 				Type:        schema.TypeString,
-				Optional: true,
+				Optional:    true,
 			},
 			"subnet": &schema.Schema{
 				Description: "The `subnet` for the IP IP.",
 				Type:        schema.TypeString,
-				Computed: true,
+				Computed:    true,
 			},
 			"subnet_id": &schema.Schema{
 				Description: "The `subnet_id` for the IP IP.",
 				Type:        schema.TypeString,
 				Required:    false,
-				Optional: true,
+				Optional:    true,
 			},
 		},
 	}
@@ -74,8 +74,8 @@ func resourceIPSet(ctx context.Context, d *schema.ResourceData, m interface{}) d
 
 	ip, err := c.SetIP(&device42.IP{
 		IPAddress: address,
-		Label: label,
-		SubnetID: subnetID,
+		Label:     label,
+		SubnetID:  subnetID,
 	})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{

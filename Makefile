@@ -7,6 +7,8 @@ OS_ARCH=linux_amd64
 
 default: install
 
+.PHONY: build
+
 build:
 	go fmt ./...
 	go build -o /tmp/${BINARY}

@@ -18,19 +18,19 @@ func dataSourceSubnet() *schema.Resource {
 		ReadContext: dataSourceSubnetRead,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
-				Description:  "The `id` of a subnet.",
-				Type:         schema.TypeInt,
-				Optional:     true,
+				Description: "The `id` of a subnet.",
+				Type:        schema.TypeInt,
+				Optional:    true,
 			},
 			"name": &schema.Schema{
-				Description:  "The `name` of the subnet.",
-				Type:         schema.TypeString,
-				Optional:     true,
+				Description: "The `name` of the subnet.",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"network": &schema.Schema{
-				Description:  "The `network` of the subnet. (e.g., 192.168.0.0/24)",
-				Type:         schema.TypeString,
-				Optional:     true,
+				Description: "The `network` of the subnet. (e.g., 192.168.0.0/24)",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"mask_bits": &schema.Schema{
 				Description: "The `mask_bits` of the subnet.",
