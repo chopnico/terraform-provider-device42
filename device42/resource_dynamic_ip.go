@@ -82,13 +82,25 @@ func resourceDynamicIPUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	var diags diag.Diagnostics
 	var err error
 
-	ipID := d.Get("id").(int)
+	ipID := d.Get("id").(string)
 	ipSubnetID := d.Get("subnet_id").(int)
 	ipVRFGroup := d.Get("vrf_group").(string)
 	ipVRFGroupID := d.Get("vrf_group_id").(int)
 	ipLabel := d.Get("label").(string)
 
-	ip, err := c.GetIPByID(ipID)
+	var id int
+	_, err = fmt.Sscan(ipID, &id)
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "unable to suggest ip",
+			Detail:   err.Error(),
+		})
+		return diags
+	}
+
+	ip, err := c.GetIPByID(id)
+
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
