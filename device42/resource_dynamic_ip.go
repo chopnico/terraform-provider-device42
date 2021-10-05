@@ -162,7 +162,7 @@ func resourceDynamicIPSet(ctx context.Context, d *schema.ResourceData, m interfa
 	ip.Label = ipLabel
 
 	log.Println(fmt.Sprintf("[DEBUG] ip : %v", ip))
-	ip, err = c.SetIP(ip)
+	ip, err = c.UpdateIP(ip)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

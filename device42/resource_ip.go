@@ -39,7 +39,7 @@ func resourceIP() *schema.Resource {
 			"label": &schema.Schema{
 				Description: "The IP `label`",
 				Type:        schema.TypeString,
-				Optional: true,
+				Optional:    true,
 			},
 			"vrf_group": &schema.Schema{
 				Description: "The `vrf_group` for the IP IP.",
