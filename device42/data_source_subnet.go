@@ -21,13 +21,11 @@ func dataSourceSubnet() *schema.Resource {
 				Description:  "The `id` of a subnet.",
 				Type:         schema.TypeInt,
 				Optional:     true,
-				AtLeastOneOf: []string{"id", "name"},
 			},
 			"name": &schema.Schema{
 				Description:  "The `name` of the subnet.",
 				Type:         schema.TypeString,
 				Optional:     true,
-				AtLeastOneOf: []string{"id", "name"},
 				RequiredWith: []string{"network"},
 			},
 			"network": &schema.Schema{
