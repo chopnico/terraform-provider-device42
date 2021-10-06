@@ -2,7 +2,7 @@ name: delete_release
 on:
   push:
     branches:
-      - main
+      - master
 jobs:
   delete_release:
     runs-on: ubuntu-latest
