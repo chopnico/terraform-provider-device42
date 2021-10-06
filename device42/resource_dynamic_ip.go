@@ -14,8 +14,7 @@ import (
 
 func resourceDynamicIP() *schema.Resource {
 	return &schema.Resource{
-		Description: "`device42_dynamic_ip` data resource can be used to generate a new IP address by " +
-			"either using a `subnet` or a `subnet_id` or by using a `vrf_group_name` or a `vrf_group_id`.",
+		Description:   "`device42_dynamic_ip` data resource can be used to generate a new IP",
 		CreateContext: resourceDynamicIPSet,
 		ReadContext:   resourceDynamicIPRead,
 		UpdateContext: resourceDynamicIPSet,
@@ -36,11 +35,6 @@ func resourceDynamicIP() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
-			"label": &schema.Schema{
-				Description: "The `label` for the IP.",
-				Type:        schema.TypeString,
-				Optional:    true,
-			},
 			"mask_bits": &schema.Schema{
 				Description: "The `mask_bits` for the IP.",
 				Type:        schema.TypeInt,
@@ -49,25 +43,22 @@ func resourceDynamicIP() *schema.Resource {
 			"subnet": &schema.Schema{
 				Description: "The `subnet` for the IP.",
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 			},
 			"subnet_id": &schema.Schema{
 				Description: "The `subnet_id` for the IP.",
 				Type:        schema.TypeInt,
-				Optional:    true,
 				Computed:    true,
 			},
 			"vrf_group": &schema.Schema{
 				Description: "The `vrf_group` for the IP.",
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 			},
 			"vrf_group_id": &schema.Schema{
 				Description: "The `vrf_group_id` for the IP.",
 				Type:        schema.TypeInt,
-				Optional:    true,
+				Required:    true,
 			},
 		},
 	}
@@ -82,7 +73,6 @@ func resourceDynamicIPUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	ipSubnetID := d.Get("subnet_id").(int)
 	ipVRFGroup := d.Get("vrf_group").(string)
 	ipVRFGroupID := d.Get("vrf_group_id").(int)
-	ipLabel := d.Get("label").(string)
 
 	var id int
 	_, err = fmt.Sscan(ipID, &id)
@@ -108,7 +98,6 @@ func resourceDynamicIPUpdate(ctx context.Context, d *schema.ResourceData, m inte
 
 	log.Println(fmt.Sprintf("[DEBUG] ip : %v", ip))
 
-	_ = d.Set("label", ipLabel)
 	_ = d.Set("subnet_id", ipSubnetID)
 	_ = d.Set("vrf_group_id", ipVRFGroupID)
 	_ = d.Set("vrf_group", ipVRFGroup)
@@ -124,38 +113,21 @@ func resourceDynamicIPSet(ctx context.Context, d *schema.ResourceData, m interfa
 
 	log.Println(fmt.Sprintf("[DEBUG] ip : %s", d.Get("ip")))
 
-	ipID := d.Get("id").(string)
 	ipMaskBits := d.Get("mask_bits").(int)
-	ipSubnet := d.Get("subnet").(string)
-	ipSubnetID := d.Get("subnet_id").(int)
-	ipVRFGroup := d.Get("vrf_group").(string)
 	ipVRFGroupID := d.Get("vrf_group_id").(int)
-	ipLabel := d.Get("label").(string)
 
 	ip := &device42.IP{}
 
-	if ipID == "" {
-		if ipSubnetID != 0 {
-			ip, err = c.SuggestIPWithSubnetID(ipSubnetID, ipMaskBits, true)
-		} else if ipSubnet != "" {
-			ip, err = c.SuggestIPWithSubnet(ipSubnet, ipMaskBits, true)
-		} else if ipVRFGroupID != 0 {
-			ip, err = c.SuggestIPWithVRFGroupID(ipVRFGroupID, ipMaskBits, true)
-		} else if ipVRFGroup != "" {
-			ip, err = c.SuggestIPWithVRFGroup(ipVRFGroup, ipMaskBits, true)
-		}
-
-		if err != nil {
-			diags = append(diags, diag.Diagnostic{
-				Severity: diag.Error,
-				Summary:  "unable to suggest ip",
-				Detail:   err.Error(),
-			})
-			return diags
-		}
+	ip, err = c.SuggestIPWithVRFGroupID(ipVRFGroupID, ipMaskBits, true)
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "unable to suggest ip",
+			Detail:   err.Error(),
+		})
+		return diags
 	}
 
-	ip.Label = ipLabel
 	ip.VRFGroupID = ipVRFGroupID
 
 	log.Println(fmt.Sprintf("[DEBUG] ip : %v", ip))
