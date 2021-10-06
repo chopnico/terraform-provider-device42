@@ -1,3 +1,8 @@
+name: delete_release
+on:
+  push:
+    branches:
+      - main
 jobs:
   delete_release:
     runs-on: ubuntu-latest
