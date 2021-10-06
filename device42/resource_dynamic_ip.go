@@ -156,6 +156,7 @@ func resourceDynamicIPSet(ctx context.Context, d *schema.ResourceData, m interfa
 	}
 
 	ip.Label = ipLabel
+	ip.VRFGroupID = ipVRFGroupID
 
 	log.Println(fmt.Sprintf("[DEBUG] ip : %v", ip))
 	ip, err = c.UpdateIP(ip)
