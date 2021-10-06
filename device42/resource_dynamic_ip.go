@@ -117,11 +117,12 @@ func resourceDynamicIPSet(ctx context.Context, d *schema.ResourceData, m interfa
 	log.Println(fmt.Sprintf("[DEBUG] ip : %s", d.Get("ip")))
 
 	ipMaskBits := d.Get("mask_bits").(int)
+	subnetID := d.Get("subnet_id").(int)
 	ipVRFGroupID := d.Get("vrf_group_id").(int)
 
 	ip := &device42.IP{}
 
-	ip, err = c.SuggestIPWithVRFGroupID(ipVRFGroupID, ipMaskBits, true)
+	ip, err = c.SuggestIPWithVRFGroupID(ipVRFGroupID, subnetID, ipMaskBits, true)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -132,6 +133,7 @@ func resourceDynamicIPSet(ctx context.Context, d *schema.ResourceData, m interfa
 	}
 
 	ip.VRFGroupID = ipVRFGroupID
+	ip.SubnetID = subnetID
 
 	log.Println(fmt.Sprintf("[DEBUG] ip : %v", ip))
 	ip, err = c.UpdateIP(ip)
