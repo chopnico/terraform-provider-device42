@@ -63,6 +63,7 @@ func dataSourceSubnetRead(ctx context.Context, d *schema.ResourceData, m interfa
 	var err error
 
 	subnetID := d.Get("id").(int)
+	vrfGroupID := d.Get("vrf_group_id").(int)
 	subnetName := d.Get("name").(string)
 	network := d.Get("network").(string)
 	subnet := &device42.Subnet{}
@@ -83,6 +84,18 @@ func dataSourceSubnetRead(ctx context.Context, d *schema.ResourceData, m interfa
 		log.Printf("[DEBUG] subnet name: %s\n", subnetName)
 
 		subnet, err = c.GetSubnetByNameWithNetwork(subnetName, network)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "unable to get subnet with name " + subnetName,
+				Detail:   err.Error(),
+			})
+			return diags
+		}
+	} else if subnetName != "" {
+		log.Printf("[DEBUG] subnet name: %s\n", subnetName)
+
+		subnet, err = c.GetSubnetByNameWithVRFGroupID(subnetName, vrfGroupID)
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,

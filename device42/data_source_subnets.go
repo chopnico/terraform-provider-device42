@@ -79,9 +79,11 @@ func dataSourceSubnetsRead(ctx context.Context, d *schema.ResourceData, m interf
 	var err error
 	var subnets *[]device42.Subnet
 
-	if d.Get("vrf_group_id") != 0 {
+	if vrfGroupID != 0 && parentSubnetID != 0 {
+		subnets, err = c.GetSubnetsByParentSubnetIDWithVRFGroupID(parentSubnetID, vrfGroupID)
+	} else if vrfGroupID != 0 {
 		subnets, err = c.GetSubnetsByVRFGroupID(vrfGroupID)
-	} else if d.Get("parent_subnet_id") != 0 {
+	} else if parentSubnetID != 0 {
 		subnets, err = c.GetSubnetsByParentSubnetID(parentSubnetID)
 	} else {
 		subnets, err = c.GetSubnets()

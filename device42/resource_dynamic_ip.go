@@ -44,21 +44,24 @@ func resourceDynamicIP() *schema.Resource {
 				Description: "The `subnet` for the IP.",
 				Type:        schema.TypeString,
 				Computed:    true,
+				Optional:    true,
 			},
 			"subnet_id": &schema.Schema{
 				Description: "The `subnet_id` for the IP.",
 				Type:        schema.TypeInt,
 				Computed:    true,
+				Optional:    true,
 			},
 			"vrf_group": &schema.Schema{
 				Description: "The `vrf_group` for the IP.",
 				Type:        schema.TypeString,
 				Computed:    true,
+				Optional:    true,
 			},
 			"vrf_group_id": &schema.Schema{
 				Description: "The `vrf_group_id` for the IP.",
 				Type:        schema.TypeInt,
-				Required:    true,
+				Optional:    true,
 			},
 		},
 	}
