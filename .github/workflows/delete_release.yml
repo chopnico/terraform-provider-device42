@@ -1,4 +1,4 @@
-uses: dev-drprasad/delete-older-releases@v0.2.0
+- uses: dev-drprasad/delete-older-releases@v0.2.0
   with:
     repo: chopnico/terraform-provider-device42
     keep_latest: 4
