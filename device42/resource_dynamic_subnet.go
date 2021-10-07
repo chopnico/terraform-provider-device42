@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"strconv"
 
 	"github.com/chopnico/device42-go"
@@ -40,6 +41,11 @@ func resourceDynamicSubnet() *schema.Resource {
 				Type:        schema.TypeInt,
 				Required:    true,
 			},
+			"mask": &schema.Schema{
+				Description: "The `mask` of the dynamic subnet.",
+				Type:        schema.TypeString,
+				Required:    true,
+			},
 			"network": &schema.Schema{
 				Description: "The `network` of this dynamic subnet.",
 				Type:        schema.TypeString,
@@ -48,6 +54,11 @@ func resourceDynamicSubnet() *schema.Resource {
 			"vrf_group_id": &schema.Schema{
 				Description: "The `vrf_group_id` of this dynamic subnet.",
 				Type:        schema.TypeInt,
+				Computed:    true,
+			},
+			"gateway": &schema.Schema{
+				Description: "The `gateway` of this dynamic subnet.",
+				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"tags": &schema.Schema{
@@ -89,6 +100,7 @@ func resourceDynamicSubnetSet(ctx context.Context, d *schema.ResourceData, m int
 	log.Println(fmt.Sprintf("[DEBUG] subnet : %v", subnet))
 
 	subnet.Tags = interfaceSliceToStringSlice(d.Get("tags").([]interface{}))
+	subnet.Gateway = ipv4GatewayFromNetwork(subnet.Network)
 
 	subnet, err = c.SetSubnet(subnet)
 	if err != nil {
@@ -134,6 +146,10 @@ func resourceDynamicSubnetRead(ctx context.Context, d *schema.ResourceData, m in
 
 	log.Println(fmt.Sprintf("[DEBUG] subnet : %v", subnet))
 
+	_, ipv4Net, err := net.ParseCIDR(subnet.Network + "/" + strconv.Itoa(subnet.MaskBits))
+	_ = d.Set("mask", ipv4MaskString(ipv4Net.Mask))
+
+	_ = d.Set("gateway", subnet.Gateway)
 	_ = d.Set("name", subnet.Name)
 	_ = d.Set("network", subnet.Network)
 	_ = d.Set("mask_bits", subnet.MaskBits)

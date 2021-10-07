@@ -3,6 +3,8 @@ package device42
 import (
 	"context"
 	"fmt"
+	"net"
+	"strconv"
 
 	device42 "github.com/chopnico/device42-go"
 
@@ -46,6 +48,11 @@ func dataSourceSubnets() *schema.Resource {
 							Type:        schema.TypeString,
 							Computed:    true,
 						},
+						"gateway": &schema.Schema{
+							Description: "The `gateway` of the subnet.",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
 						"vlan": &schema.Schema{
 							Description: "The `vlan` of the subnet.",
 							Type:        schema.TypeString,
@@ -54,6 +61,11 @@ func dataSourceSubnets() *schema.Resource {
 						"mask_bits": &schema.Schema{
 							Description: "The `mask bits` of the subnet.",
 							Type:        schema.TypeInt,
+							Computed:    true,
+						},
+						"mask": &schema.Schema{
+							Description: "The `mask` of the subnet.",
+							Type:        schema.TypeString,
 							Computed:    true,
 						},
 						"parent_subnet_id": &schema.Schema{
@@ -128,6 +140,10 @@ func flattenSubnetsData(subnets *[]device42.Subnet) []interface{} {
 		for i, subnet := range *subnets {
 			s := make(map[string]interface{})
 
+			_, ipv4Net, _ := net.ParseCIDR(subnet.Network + "/" + strconv.Itoa(subnet.MaskBits))
+			s["mask"] = ipv4MaskString(ipv4Net.Mask)
+
+			s["gateway"] = subnet.Gateway
 			s["id"] = subnet.SubnetID
 			s["name"] = subnet.Name
 			s["network"] = subnet.Network

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"strconv"
 
 	"github.com/chopnico/device42-go"
@@ -35,10 +36,20 @@ func resourceSubnet() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 			},
+			"gateway": &schema.Schema{
+				Description: "The `gateway` of the subnet.",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 			"mask_bits": &schema.Schema{
 				Description: "The `mask_bits` of the subnet.",
 				Type:        schema.TypeInt,
 				Required:    true,
+			},
+			"mask": &schema.Schema{
+				Description: "The `mask` of the subnet.",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"vrf_group_id": &schema.Schema{
 				Description: "The `vrf_group_id` of the subnet.",
@@ -74,6 +85,16 @@ func resourceSubnetSet(ctx context.Context, d *schema.ResourceData, m interface{
 		VrfGroupID: d.Get("vrf_group_id").(int),
 		Tags:       tags,
 	})
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "unable to create subnet with name " + d.Get("name").(string),
+			Detail:   err.Error(),
+		})
+	}
+
+	subnet.Gateway = ipv4GatewayFromNetwork(subnet.Network)
+	subnet, err = c.SetSubnet(subnet)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -118,6 +139,10 @@ func resourceSubnetRead(ctx context.Context, d *schema.ResourceData, m interface
 
 	log.Println(fmt.Sprintf("[DEBUG] subnet : %v", subnet))
 
+	_, ipv4Net, err := net.ParseCIDR(subnet.Network + "/" + strconv.Itoa(subnet.MaskBits))
+	_ = d.Set("mask", ipv4MaskString(ipv4Net.Mask))
+
+	_ = d.Set("gateway", subnet.Gateway)
 	_ = d.Set("name", subnet.Name)
 	_ = d.Set("network", subnet.Network)
 	_ = d.Set("mask_bits", subnet.MaskBits)

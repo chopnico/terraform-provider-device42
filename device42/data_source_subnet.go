@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"strconv"
 
 	device42 "github.com/chopnico/device42-go"
@@ -35,6 +36,16 @@ func dataSourceSubnet() *schema.Resource {
 			"mask_bits": &schema.Schema{
 				Description: "The `mask_bits` of the subnet.",
 				Type:        schema.TypeInt,
+				Computed:    true,
+			},
+			"mask": &schema.Schema{
+				Description: "The `mask` of the subnet.",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
+			"gateway": &schema.Schema{
+				Description: "The `gateway` of the subnet.",
+				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"vrf_group_id": &schema.Schema{
@@ -108,6 +119,10 @@ func dataSourceSubnetRead(ctx context.Context, d *schema.ResourceData, m interfa
 
 	c.WriteToDebugLog(fmt.Sprintf("%v", subnet))
 
+	_, ipv4Net, err := net.ParseCIDR(subnet.Network + "/" + strconv.Itoa(subnet.MaskBits))
+	_ = d.Set("mask", ipv4MaskString(ipv4Net.Mask))
+
+	_ = d.Set("gateway", subnet.Gateway)
 	_ = d.Set("name", subnet.Name)
 	_ = d.Set("network", subnet.Network)
 	_ = d.Set("mask_bits", subnet.MaskBits)

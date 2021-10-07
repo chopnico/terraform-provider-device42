@@ -32,3 +32,18 @@ func interfaceSliceToStringSlice(i []interface{}) []string {
 	}
 	return s
 }
+
+func ipv4MaskString(m []byte) string {
+	return fmt.Sprintf("%d.%d.%d.%d", m[0], m[1], m[2], m[3])
+}
+
+func ipv4GatewayFromNetwork(network string) string {
+	n := strings.Split(network, ".")
+	lastOctet := n[len(n)-1]
+	firstThreeOctets := n[:len(n)-1]
+
+	var i int
+	fmt.Sscan(lastOctet, &i)
+
+	return strings.Join(firstThreeOctets, ".") + "." + strconv.Itoa(i+1)
+}
