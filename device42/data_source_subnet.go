@@ -54,6 +54,11 @@ func dataSourceSubnet() *schema.Resource {
 				Computed:    true,
 				Optional:    true,
 			},
+			"is_supernet": &schema.Schema{
+				Description: "Is this subnet a supernet?",
+				Type:        schema.TypeBool,
+				Optional:    true,
+			},
 			"tags": &schema.Schema{
 				Description: "All`tags` for a subnet.",
 				Type:        schema.TypeList,
@@ -122,6 +127,7 @@ func dataSourceSubnetRead(ctx context.Context, d *schema.ResourceData, m interfa
 	_, ipv4Net, err := net.ParseCIDR(subnet.Network + "/" + strconv.Itoa(subnet.MaskBits))
 	_ = d.Set("mask", ipv4MaskString(ipv4Net.Mask))
 
+	_ = d.Set("is_supernet", d.Get("is_supernet").(bool))
 	_ = d.Set("gateway", subnet.Gateway)
 	_ = d.Set("name", subnet.Name)
 	_ = d.Set("network", subnet.Network)

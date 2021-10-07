@@ -68,6 +68,11 @@ func dataSourceSubnets() *schema.Resource {
 							Type:        schema.TypeString,
 							Computed:    true,
 						},
+						"is_supernet": &schema.Schema{
+							Description: "Is this subnet a supernet?",
+							Type:        schema.TypeBool,
+							Optional:    true,
+						},
 						"parent_subnet_id": &schema.Schema{
 							Description: "The `mask bits` of the subnet.",
 							Type:        schema.TypeInt,
@@ -110,7 +115,7 @@ func dataSourceSubnetsRead(ctx context.Context, d *schema.ResourceData, m interf
 		return diags
 	}
 
-	s := flattenSubnetsData(subnets)
+	s := flattenSubnetsData(subnets, d)
 	if err := d.Set("subnets", s); err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -133,7 +138,7 @@ func dataSourceSubnetsRead(ctx context.Context, d *schema.ResourceData, m interf
 }
 
 // flatten vrf groups to a map
-func flattenSubnetsData(subnets *[]device42.Subnet) []interface{} {
+func flattenSubnetsData(subnets *[]device42.Subnet, d *schema.ResourceData) []interface{} {
 	if subnets != nil {
 		ss := make([]interface{}, len(*subnets))
 
@@ -143,6 +148,7 @@ func flattenSubnetsData(subnets *[]device42.Subnet) []interface{} {
 			_, ipv4Net, _ := net.ParseCIDR(subnet.Network + "/" + strconv.Itoa(subnet.MaskBits))
 			s["mask"] = ipv4MaskString(ipv4Net.Mask)
 
+			s["is_supernet"] = d.Get("is_supernet").(bool)
 			s["gateway"] = subnet.Gateway
 			s["id"] = subnet.SubnetID
 			s["name"] = subnet.Name
