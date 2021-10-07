@@ -60,6 +60,7 @@ func resourceSubnet() *schema.Resource {
 				Description: "Is this subnet a supernet?",
 				Type:        schema.TypeBool,
 				Optional:    true,
+				Default: false,
 			},
 			"tags": &schema.Schema{
 				Description: "The `tags` for this subnet.",

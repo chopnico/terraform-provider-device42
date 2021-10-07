@@ -55,6 +55,7 @@ func resourceDynamicSubnet() *schema.Resource {
 				Description: "Is this subnet a supernet?",
 				Type:        schema.TypeBool,
 				Optional:    true,
+				Default: false,
 			},
 			"vrf_group_id": &schema.Schema{
 				Description: "The `vrf_group_id` of this dynamic subnet.",
@@ -156,7 +157,6 @@ func resourceDynamicSubnetRead(ctx context.Context, d *schema.ResourceData, m in
 	_, ipv4Net, err := net.ParseCIDR(subnet.Network + "/" + strconv.Itoa(subnet.MaskBits))
 	_ = d.Set("mask", ipv4MaskString(ipv4Net.Mask))
 
-	_ = d.Set("is_supernet", d.Get("is_supernet").(bool))
 	_ = d.Set("gateway", subnet.Gateway)
 	_ = d.Set("name", subnet.Name)
 	_ = d.Set("network", subnet.Network)
