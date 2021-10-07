@@ -53,7 +53,7 @@ func resourceIP() *schema.Resource {
 			},
 			"subnet_id": &schema.Schema{
 				Description: "The `subnet_id` for the IP IP.",
-				Type:        schema.TypeString,
+				Type:        schema.TypeInt,
 				Required:    false,
 				Optional:    true,
 			},
