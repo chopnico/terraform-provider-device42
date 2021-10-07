@@ -55,7 +55,7 @@ func resourceDynamicSubnet() *schema.Resource {
 				Description: "Is this subnet a supernet?",
 				Type:        schema.TypeBool,
 				Optional:    true,
-				Default: false,
+				Default:     false,
 			},
 			"vrf_group_id": &schema.Schema{
 				Description: "The `vrf_group_id` of this dynamic subnet.",
@@ -106,7 +106,7 @@ func resourceDynamicSubnetSet(ctx context.Context, d *schema.ResourceData, m int
 	log.Println(fmt.Sprintf("[DEBUG] subnet : %v", subnet))
 
 	subnet.Tags = interfaceSliceToStringSlice(d.Get("tags").([]interface{}))
-	if d.Get("is_supernet").(bool) {
+	if !d.Get("is_supernet").(bool) {
 		subnet.Gateway = ipv4GatewayFromNetwork(subnet.Network)
 	}
 

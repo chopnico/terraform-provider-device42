@@ -60,7 +60,7 @@ func resourceSubnet() *schema.Resource {
 				Description: "Is this subnet a supernet?",
 				Type:        schema.TypeBool,
 				Optional:    true,
-				Default: false,
+				Default:     false,
 			},
 			"tags": &schema.Schema{
 				Description: "The `tags` for this subnet.",
@@ -99,7 +99,7 @@ func resourceSubnetSet(ctx context.Context, d *schema.ResourceData, m interface{
 		})
 	}
 
-	if d.Get("is_supernet").(bool) {
+	if !d.Get("is_supernet").(bool) {
 		subnet.Gateway = ipv4GatewayFromNetwork(subnet.Network)
 	}
 	subnet, err = c.SetSubnet(subnet)
