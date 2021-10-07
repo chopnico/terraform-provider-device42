@@ -148,7 +148,6 @@ func flattenSubnetsData(subnets *[]device42.Subnet, d *schema.ResourceData) []in
 			_, ipv4Net, _ := net.ParseCIDR(subnet.Network + "/" + strconv.Itoa(subnet.MaskBits))
 			s["mask"] = ipv4MaskString(ipv4Net.Mask)
 
-			s["is_supernet"] = d.Get("is_supernet").(bool)
 			s["gateway"] = subnet.Gateway
 			s["id"] = subnet.SubnetID
 			s["name"] = subnet.Name
