@@ -44,7 +44,7 @@ func resourceDynamicSubnet() *schema.Resource {
 			"mask": &schema.Schema{
 				Description: "The `mask` of the dynamic subnet.",
 				Type:        schema.TypeString,
-				Required:    true,
+				Computed:    true,
 			},
 			"network": &schema.Schema{
 				Description: "The `network` of this dynamic subnet.",

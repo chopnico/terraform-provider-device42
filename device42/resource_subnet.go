@@ -49,7 +49,7 @@ func resourceSubnet() *schema.Resource {
 			"mask": &schema.Schema{
 				Description: "The `mask` of the subnet.",
 				Type:        schema.TypeString,
-				Optional:    true,
+				Computed:    true,
 			},
 			"vrf_group_id": &schema.Schema{
 				Description: "The `vrf_group_id` of the subnet.",
