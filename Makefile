@@ -2,7 +2,7 @@ HOSTNAME=github.com
 NAMESPACE=chopnico
 NAME=device42
 BINARY=terraform-provider-${NAME}
-VERSION=0.3.15
+VERSION=0.3.27
 OS_ARCH=linux_amd64
 
 default: install
